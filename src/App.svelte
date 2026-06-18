@@ -3,56 +3,34 @@
     import {generateEquation} from "./lib/domain/EquationGenerator.svelte";
     import type {EquationOptions} from "./lib/interfaces/EquationOptions.svelte";
     import type {Equation} from "./lib/interfaces/Equation.svelte";
+    import {parseAnswer} from "./lib/domain/UserInputHandler.svelte";
 
     const equationOptions: EquationOptions = {
         minCoefficient: -5,
         maxCoefficient: 5,
         minNumberOfX: 1,
-        maxNumberOfX: 3,
+        maxNumberOfX: 2,
         minLength: 2,
         maxLength: 4
     };
 
     let equation: Equation = $state(generateEquation(equationOptions))
     let answer = $state('')
+    let feedbackStatus = $state('none')
 
     function onAnswerInputChange(event: KeyboardEvent) {
         if (event.key === 'Enter') checkAnswer()
     }
 
-    function parseAnswer(raw: string): number | null {
-        const parsingWorked = (n: any) => !Number.isNaN(n)
-
-        raw =
-            Array
-            .of(raw)
-            .filter(
-                character => '-,.0123456789/'.includes(character)
-            )
-            .join('')
-
-        let result = Number.parseInt(raw)
-        if (parsingWorked(result)) return result
-
-        result = Number.parseFloat(raw)
-        if (parsingWorked(result)) return result
-
-        if (!raw.includes('/')) return null
-
-        const numerator = Number.parseInt(raw.split('/').at(0)!)
-        const denominator = Number.parseInt(raw.split('/').at(1)!)
-        return numerator / denominator
-    }
-
     function checkAnswer() {
         console.log('parsed', parseAnswer(answer))
         if (parseAnswer(answer) == equation.solution) {
-            console.log('ok')
             equation = generateEquation(equationOptions)
             answer = ''
+            feedbackStatus = 'right-answer'
         } else {
             answer = ''
-            console.log('peeeeem!')
+            feedbackStatus = 'wrong-answer'
         }
     }
 </script>
@@ -71,5 +49,5 @@
     <div class="border-b border-slate-200 w-full"></div>
     <small class="flex items-center">Aperte a tecla Enter (<span class="material-symbols-outlined text-slate-700">keyboard_return</span>)
         para enviar a resposta.</small>
-    <UserFeedback/>
+    <UserFeedback {feedbackStatus}/>
 </main>
