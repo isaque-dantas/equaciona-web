@@ -16,17 +16,21 @@ export function render(members: EquationMember[]): string {
     return renderedMembers.join(' ')
 }
 
-function renderMember(member: EquationMember, isFirstMember: boolean): string {
-    let signal = member.coefficient < 0 ? '-' : '+';
-    if (isFirstMember) signal = ''
+export function renderMember(member: EquationMember, isFirstMember: boolean): string {
+    let signal = ''
+
+    if (isFirstMember && member.coefficient < 0) {
+        signal = '-'
+    } else if (!isFirstMember) {
+        signal = member.coefficient < 0 ? '- ' : '+ ';
+    }
 
     let coefficient = Math.abs(member.coefficient).toString()
     if (member.hasX && coefficient === '1') coefficient = ''
 
     return (
         signal +
-        ' ' +
         coefficient +
-        (member.hasX ? 'x' : '')
+        (member.hasX && member.coefficient !== 0 ? 'x' : '')
     )
 }

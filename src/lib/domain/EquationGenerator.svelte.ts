@@ -5,21 +5,24 @@ import {randInt} from "./RandomUtils.svelte";
 import {render} from "./EquationRenderer.svelte";
 
 export function generateEquation(options: EquationOptions): Equation {
-    const members: EquationMember[] = []
     const numberOfX = randInt(options.minNumberOfX, options.maxNumberOfX)
     const length = randInt(options.minLength, options.maxLength)
 
-    let coefficient = 0;
-    for (let i = 0; i < length; i++) {
-        while (i < numberOfX && coefficient === 0) {
-            coefficient = randInt(options.minCoefficient, options.maxCoefficient)
-        }
+    let coefficient = 0
 
-        members.push({
-            coefficient: randInt(options.minCoefficient, options.maxCoefficient),
-            hasX: i < numberOfX
-        })
-    }
+    const members: EquationMember[] =
+        new Array(length)
+            .fill({})
+            .map((_, i) => {
+                do {
+                    coefficient = randInt(options.minCoefficient, options.maxCoefficient)
+                } while (i < numberOfX && coefficient === 0)
+
+                return {
+                    coefficient,
+                    hasX: i < numberOfX
+                }
+            })
 
     const rendered = render(members)
     const solution = getSolution(members)
@@ -33,28 +36,30 @@ export function generateEquation(options: EquationOptions): Equation {
     }
 }
 
-function getSolution(members: EquationMember[]): number {
-    const sumOfMembersWithX = (
-        members
-            .filter(m => m.hasX)
+export function getSolution(members: EquationMember[]): number | null {
+    const xMembers = members.filter(m => m.hasX)
+    if (xMembers.length === 0) return null
+
+    const sumOfXMembers = (
+        xMembers
             .map(m => m.coefficient)
             .reduce((previous, current) => previous + current)
     )
 
-    const membersWithoutX = members.filter(m => !m.hasX)
+    if (sumOfXMembers === 0) return null
+
+    const nonXMembers = members.filter(m => !m.hasX)
     let sumOfMembersWithoutX = 0
-    if (membersWithoutX.length != 0) {
+    if (nonXMembers.length != 0) {
         sumOfMembersWithoutX = (
-            membersWithoutX
+            nonXMembers
                 .map(m => m.coefficient)
                 .reduce((previous, current) => previous + current)
         )
     }
 
-    return (
-        (-1 * sumOfMembersWithoutX / sumOfMembersWithX)
-        // Math.round(
-        //     (-1 * sumOfMembersWithoutX / sumOfMembersWithX) * 100
-        // ) / 100
-    )
+    let solution = (-1 * sumOfMembersWithoutX / sumOfXMembers)
+    if (solution === -0) solution = 0
+
+    return solution
 }
