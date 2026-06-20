@@ -21,15 +21,13 @@ export function getUpdatedPoints(isAnswerRight: boolean, state: GameState): {
     const secondsUsedToAnswer = state.secondsOfLastRightAnswer - state.secondsLeft
     const secondsFactor = state.points / 20 * Math.log(secondsUsedToAnswer + 1)
 
-    const updatedPoints = Math.round(
-        (
-            isAnswerRight ?
-                state.points + state.options.pointsOnRight - secondsFactor :
-                state.points + state.options.pointsOnWrong - secondsFactor
-        ) * 100
-    ) / 100
+    const updatedPoints = roundToTwoPoints(
+        isAnswerRight ?
+            state.points + state.options.pointsOnRight - secondsFactor :
+            state.points + state.options.pointsOnWrong - secondsFactor
+    )
 
-    const deltaPoints = Math.round((updatedPoints - state.points) * 100) / 100
+    const deltaPoints = roundToTwoPoints(updatedPoints - state.points)
 
     return {
         points: updatedPoints,
@@ -43,17 +41,21 @@ export function getUpdatedSecondsLeft(isAnswerRight: boolean, state: GameState):
 } {
     const updatedSecondsLeft = Math.max(
         0,
-        (
+        roundToTwoPoints(
             isAnswerRight ?
                 state.secondsLeft + state.options.secondsOnRight :
                 state.secondsLeft + state.options.secondsOnWrong
         )
     )
 
-    const deltaSeconds = Math.round((updatedSecondsLeft - state.secondsLeft) * 100) / 100
+    const deltaSeconds = roundToTwoPoints(updatedSecondsLeft - state.secondsLeft)
 
     return {
         secondsLeft: updatedSecondsLeft,
         deltaSeconds
     }
+}
+
+function roundToTwoPoints(x: number): number {
+    return Math.round(x * 100) / 100
 }

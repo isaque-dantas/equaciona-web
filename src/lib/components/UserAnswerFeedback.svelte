@@ -37,22 +37,23 @@
 </script>
 
 {#snippet floatingIcon(color: string, side: 'right' | 'left', icon: string)}
+    {const xPosition = side === 'right' ? 'right-[20vw]' : 'left-[20vw]'}
     <p
             in:appear
             onintroend={() => onAnimationFinished()}
-            class="fixed {side}-40 bottom-1/3 w-16 h-16 flex items-center justify-center rounded-2xl border-4 border-{color}">
+            class="fixed {xPosition} bottom-1/3 w-16 h-16 flex items-center justify-center rounded-2xl border-4 border-{color}">
         <span class="material-symbols-outlined text-6xl! text-{color}">{icon}</span>
     </p>
 {/snippet}
 
 {#snippet floatingNumber(value: number, unity: string, side: 'right' | 'left')}
     {const color = value < 0 ? 'red-700' : 'green-700'}
-    {const translation = side === 'right' ? 'translate-x-[calc(25vw_-_50%)]' : '-translate-x-[calc(25vw_-_50%)]'}
+    {const xPosition = side === 'right' ? 'right-[30vw]' : 'left-[30vw]'}
 
     <p
             in:appear
             onintroend={() => onAnimationFinished()}
-            class="fixed left-1/2 {translation} bottom-1/3 w-fit flex text-2xl font-mono font-bold text-{color} text-3xl">
+            class="fixed {xPosition} bottom-1/3 w-fit flex text-2xl font-mono font-bold text-{color} text-3xl">
         {value > 0 ? '+' : ''}{value}{unity}
     </p>
 {/snippet}
