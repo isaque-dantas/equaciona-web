@@ -25,6 +25,13 @@
     "vitest-browser-svelte": "^2.1.1"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.3.1"
+    "@tailwindcss/vite": "^4.3.1",
+    "@tsparticles/engine": "^4.2.0",
+    "@tsparticles/preset-meteors": "^4.2.0",
+    "@tsparticles/preset-squares": "^4.2.0",
+    "@tsparticles/preset-stars": "^4.2.0",
+    "@tsparticles/preset-triangles": "^4.2.0",
+    "@tsparticles/svelte": "^4.2.0",
+    "tsparticles": "^4.2.0"
   }
 }
