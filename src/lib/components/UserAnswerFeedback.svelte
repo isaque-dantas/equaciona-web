@@ -36,13 +36,14 @@
     }
 </script>
 
-{#snippet floatingIcon(color: string, side: 'right' | 'left', icon: string)}
+{#snippet floatingIcon(isAnswerRight: boolean, side: 'right' | 'left')}
     {const xPosition = side === 'right' ? 'right-[20vw]' : 'left-[20vw]'}
+    {const colors = isAnswerRight ? 'border-green-700 text-green-700' : 'border-red-700 text-red-700'}
     <p
             in:appear
             onintroend={() => onAnimationFinished()}
-            class="fixed {xPosition} bottom-1/3 w-16 h-16 flex items-center justify-center rounded-2xl border-4 border-{color}">
-        <span class="material-symbols-outlined text-6xl! text-{color}">{icon}</span>
+            class="fixed {xPosition} bottom-1/3 w-16 h-16 flex items-center justify-center rounded-2xl border-4 {colors}">
+        <span class="material-symbols-outlined text-6xl!">{isAnswerRight ? 'check' : 'close'}</span>
     </p>
 {/snippet}
 
@@ -58,17 +59,9 @@
     </p>
 {/snippet}
 
-{#if feedbackStatus == 'right-answer'}
-    {@render floatingIcon('green-700', 'right', 'check')}
-    {@render floatingIcon('green-700', 'left', 'check')}
-{/if}
-
-{#if feedbackStatus === 'wrong-answer'}
-    {@render floatingIcon('red-700', 'right', 'close')}
-    {@render floatingIcon('red-700', 'left', 'close')}
-{/if}
-
 {#if feedbackStatus !== 'none'}
+    {@render floatingIcon(feedbackStatus === 'right-answer', 'right')}
+    {@render floatingIcon(feedbackStatus === 'right-answer', 'left')}
     {@render floatingNumber(deltaPoints, 'pts', 'right')}
     {@render floatingNumber(deltaSeconds, 's', 'left')}
 {/if}
