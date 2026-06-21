@@ -50,10 +50,6 @@
         gameStatus = 'stopped'
     }
 
-    function onAnswerInputChange(event: KeyboardEvent) {
-        if (event.key === 'Enter') checkAnswer(answer, equation, onRightAnswer, onWrongAnswer)
-    }
-
     function onRightAnswer() {
         answer = ''
         equation = generateEquation(equationOptions)
@@ -87,7 +83,10 @@
         <section class="flex flex-col gap-4 items-center">
             <h3 class="font-mono text-6xl text-center font-bold">{equation.rendered}</h3>
 
-            <UserInputHandler {onAnswerInputChange} {checkAnswer} bind:answer={answer}/>
+            <UserInputHandler
+                    onAnswerSubmitted={() => checkAnswer(answer, equation, onRightAnswer, onWrongAnswer)}
+                    bind:answer={answer}
+            />
 
             <small class="flex items-center">Aperte a tecla Enter (<span
                     class="material-symbols-outlined text-slate-700">keyboard_return</span>)

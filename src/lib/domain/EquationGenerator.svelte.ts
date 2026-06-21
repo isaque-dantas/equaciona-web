@@ -27,8 +27,6 @@ export function generateEquation(options: EquationOptions): Equation {
     const rendered = render(members)
     const solution = getSolution(members)
 
-    console.log('solution', solution)
-
     return {
         members,
         rendered,
