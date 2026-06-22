@@ -82,21 +82,21 @@
         selectedDifficulty = updatedDifficulty
         resetGameStatus()
     }
-
-    $inspect(gameOptions)
 </script>
+
+{#snippet credits()}
+    <a href="https://github.com/isaque-dantas" target="_blank"
+       class="flex items-center p-4 border border-slate-300 shadow-md rounded-lg">
+        Por Isaque Dantas (GitHub<span class="material-symbols-outlined">arrow_outward</span>)</a>
+{/snippet}
 
 <main class="px-6 flex flex-col md:absolute md:top-48 md:left-1/2 md:-translate-x-1/2">
     {#if gameStatus === 'before-start'}
         <section
                 class="flex flex-col gap-4 mt-[50vh] -translate-y-1/2 md:translate-y-0 md:mt-0 max-w-sm self-center md:self-auto">
             <h1 class="text-6xl font-bold italic self-center">Equaciona!</h1>
-            <a href="https://github.com/isaque-dantas" target="_blank"
-               class="flex items-center p-4 border border-slate-300 shadow-md rounded-lg mt-4">
-                Por Isaque Dantas (GitHub<span class="material-symbols-outlined">arrow_outward</span>)</a>
-
+            {@render credits()}
             <DifficultySelector onDifficultyChanged={onDifficultyChanged} {selectedDifficulty}/>
-
             <button onclick={resetGame}
                     class="text-xl border-2 border-slate-700 text-slate-700 self-center px-10 py-1 rounded-xl cursor-pointer hover:bg-slate-700 hover:text-white transition-all font-bold flex items-center">
                 <span>Iniciar</span><span class="material-symbols-outlined">chevron_right</span></button>
@@ -111,7 +111,7 @@
 
             <div class="border-b border-slate-200 w-full my-8"></div>
 
-            <h3 class="text-5xl md:text-6xl text-center font-bold">{equation.rendered}</h3>
+            <h3 class="text-4xl md:text-5xl text-center font-bold">{equation.rendered}</h3>
 
             <UserInputHandler
                     onAnswerSubmitted={(updatedAnswer: string) => {
@@ -129,9 +129,7 @@
                 class="flex flex-col gap-4 mt-[50vh] -translate-y-1/2 md:translate-y-0 md:mt-0 max-w-sm self-center md:self-auto">
             <h1 class="text-4xl font-medium">O cronômetro zerou... mas você conseguiu <span
                     class="font-bold italic"> {points} pontos</span>!</h1>
-            <a href="https://github.com/isaque-dantas" target="_blank"
-               class="flex items-center p-4 border border-slate-300 shadow-md rounded-lg">
-                Por Isaque Dantas (GitHub<span class="material-symbols-outlined">arrow_outward</span>)</a>
+            {@render credits()}
             <p>Obrigado por jogar!</p>
             <button onclick={() => resetGame()}
                     class="text-xl mt-16 border border-slate-700 text-slate-700 self-center px-4 py-2 rounded-xl cursor-pointer hover:bg-slate-700 hover:text-white transition-all font-medium">
