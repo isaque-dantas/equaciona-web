@@ -1,4 +1,3 @@
-import type {GameOptions} from "../interfaces/GameOptions.svelte";
 import type {GameState, UpdatedGameState} from "../interfaces/GameState.svelte";
 
 export function getUpdatedGame(isAnswerRight: boolean, state: GameState): UpdatedGameState {
@@ -19,7 +18,7 @@ export function getUpdatedPoints(isAnswerRight: boolean, state: GameState): {
     deltaPoints: number
 } {
     const secondsUsedToAnswer = state.secondsOfLastRightAnswer - state.secondsLeft
-    const secondsFactor = state.points / 20 * Math.log(secondsUsedToAnswer + 1)
+    const secondsFactor = Math.max(0, state.points / 20 * Math.log(secondsUsedToAnswer + 1))
 
     const updatedPoints = roundToTwoPoints(
         isAnswerRight ?

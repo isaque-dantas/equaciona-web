@@ -1,7 +1,6 @@
 <script lang="ts">
     import UserAnswerFeedback from "./lib/components/UserAnswerFeedback.svelte";
     import Scoreboard from "./lib/components/Scoreboard.svelte";
-    import ParticlesInitializer from "./lib/components/ParticlesInitializer.svelte";
 
     import {generateEquation} from "./lib/domain/EquationGenerator.svelte";
     import type {EquationOptions} from "./lib/interfaces/EquationOptions.svelte";
@@ -35,15 +34,8 @@
         options: gameOptions
     })
 
-    let gameStatus: 'running' | 'stopped' = $state('running')
-
-    let countdownIntervalId = $state(
-        startCountdown(
-            () => secondsLeft,
-            (s) => secondsLeft = s,
-            onCountdownBeingOver
-        )
-    )
+    let gameStatus: 'before-start' | 'running' | 'stopped' = $state('before-start')
+    let countdownIntervalId = $state(0)
 
     function onCountdownBeingOver() {
         clearInterval(countdownIntervalId)
@@ -51,7 +43,6 @@
     }
 
     function onRightAnswer() {
-        answer = ''
         equation = generateEquation(equationOptions)
         feedbackStatus = 'right-answer';
 
@@ -59,7 +50,6 @@
     }
 
     function onWrongAnswer() {
-        answer = ''
         feedbackStatus = 'wrong-answer';
 
         ({points, deltaPoints, secondsLeft, secondsOfLastRightAnswer, deltaSeconds} = getUpdatedGame(false, gameState))
@@ -70,6 +60,8 @@
         answer = ''
         gameStatus = 'running'
 
+        equation = generateEquation(equationOptions)
+
         countdownIntervalId = startCountdown(
             () => secondsLeft,
             (s) => secondsLeft = s,
@@ -78,29 +70,45 @@
     }
 </script>
 
-<main class="absolute top-48 left-1/2 -translate-x-1/2">
-    {#if gameStatus === 'running'}
-        <section class="flex flex-col gap-4 items-center">
-            <h3 class="font-mono text-6xl text-center font-bold">{equation.rendered}</h3>
-
-            <UserInputHandler
-                    onAnswerSubmitted={() => checkAnswer(answer, equation, onRightAnswer, onWrongAnswer)}
-                    bind:answer={answer}
-            />
-
-            <small class="flex items-center">Aperte a tecla Enter (<span
-                    class="material-symbols-outlined text-slate-700">keyboard_return</span>)
-                para enviar a resposta.</small>
-            <div class="border-b border-slate-200 w-full my-8"></div>
-
+<main class="px-6 flex flex-col md:absolute md:top-48 md:left-1/2 md:-translate-x-1/2">
+    {#if gameStatus === 'before-start'}
+        <section
+                class="flex flex-col gap-4 mt-[50vh] -translate-y-1/2 md:translate-y-0 md:mt-0 max-w-sm self-center md:self-auto">
+            <h1 class="text-6xl font-bold italic self-center">Equaciona!</h1>
+            <a href="https://github.com/isaque-dantas" target="_blank"
+               class="flex items-center p-4 border border-slate-300 shadow-md rounded-lg mt-4">
+                Por Isaque Dantas (GitHub<span class="material-symbols-outlined">arrow_outward</span>)</a>
+            <button onclick={resetGame}
+                    class="text-xl mt-10 border-2 border-slate-700 text-slate-700 self-center px-10 py-1 rounded-xl cursor-pointer hover:bg-slate-700 hover:text-white transition-all font-bold flex items-center">
+                <span>Iniciar</span><span class="material-symbols-outlined">chevron_right</span></button>
+        </section>
+    {:else if gameStatus === 'running'}
+        <section class="flex flex-col gap-4 items-center mt-8 md:mt-0 ">
             <Scoreboard
                     {points}
                     {secondsLeft}
                     {secondsOfLastRightAnswer}
             />
+
+            <div class="border-b border-slate-200 w-full my-8"></div>
+
+            <h3 class="text-5xl md:text-6xl text-center font-bold">{equation.rendered}</h3>
+
+            <UserInputHandler
+                    onAnswerSubmitted={(updatedAnswer: string) => {
+                        answer = updatedAnswer
+                        console.log('answer', answer)
+                        checkAnswer(answer, equation, onRightAnswer, onWrongAnswer)
+                    }}
+            />
+
+            <small class="md:flex items-center hidden">Aperte a tecla Enter (<span
+                    class="material-symbols-outlined text-slate-700">keyboard_return</span>)
+                para enviar a resposta.</small>
         </section>
     {:else if gameStatus === 'stopped'}
-        <section class="flex flex-col gap-4">
+        <section
+                class="flex flex-col gap-4 mt-[50vh] -translate-y-1/2 md:translate-y-0 md:mt-0 max-w-sm self-center md:self-auto">
             <h1 class="text-4xl font-medium">O cronômetro zerou... mas você conseguiu <span
                     class="font-bold italic"> {points} pontos</span>!</h1>
             <a href="https://github.com/isaque-dantas" target="_blank"
@@ -121,4 +129,3 @@
         {deltaPoints}
         {deltaSeconds}
 />
-<!--<ParticlesInitializer/>-->

@@ -15,8 +15,8 @@ export function equationOptionsFactory(): EquationOptions {
 
 export function gameOptionsFactory(): GameOptions {
     return {
-        initialSeconds: 20,
-        secondsOnRight: 3,
+        initialSeconds: 30,
+        secondsOnRight: 5,
         secondsOnWrong: -2,
         pointsOnRight: 50,
         pointsOnWrong: -10

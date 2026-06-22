@@ -36,34 +36,35 @@
     }
 </script>
 
-{#snippet floatingIcon(isAnswerRight: boolean, side: 'right' | 'left')}
-    {const xPosition = side === 'right' ? 'right-[20vw]' : 'left-[20vw]'}
-    {const colors = isAnswerRight ? 'border-green-700 text-green-700' : 'border-red-700 text-red-700'}
+{#snippet floatingIcon(isAnswerRight: boolean)}
+    {const color = isAnswerRight ? 'border-green-700 text-green-700' : 'border-red-700 text-red-700'}
     <p
-            in:appear
             onintroend={() => onAnimationFinished()}
-            class="fixed {xPosition} bottom-1/3 w-16 h-16 flex items-center justify-center rounded-2xl border-4 {colors}">
-        <span class="material-symbols-outlined text-6xl!">{isAnswerRight ? 'check' : 'close'}</span>
+            class=" w-10 h-10 md:w-16 md:h-16 flex items-center justify-center rounded-lg md:rounded-2xl border-2 md:border-4 {color}">
+        <span class="material-symbols-outlined text-3xl! md:text-6xl!">{isAnswerRight ? 'check' : 'close'}</span>
     </p>
 {/snippet}
 
-{#snippet floatingNumber(value: number, unity: string, side: 'right' | 'left')}
-    {const color = value < 0 ? 'red-700' : 'green-700'}
-    {const xPosition = side === 'right' ? 'right-[30vw]' : 'left-[30vw]'}
+{#snippet floatingNumber(value: number, unity: string)}
+    {const color = value < 0 ? 'text-red-700' : 'text-green-700'}
 
     <p
-            in:appear
             onintroend={() => onAnimationFinished()}
-            class="fixed {xPosition} bottom-1/3 w-fit flex text-2xl font-mono font-bold text-{color} text-3xl">
+            class=" w-fit flex text-2xl font-mono font-bold {color} text-2xl md:text-3xl">
         {value > 0 ? '+' : ''}{value}{unity}
     </p>
 {/snippet}
 
 {#if feedbackStatus !== 'none'}
-    {@render floatingIcon(feedbackStatus === 'right-answer', 'right')}
-    {@render floatingIcon(feedbackStatus === 'right-answer', 'left')}
-    {@render floatingNumber(deltaPoints, 'pts', 'right')}
-    {@render floatingNumber(deltaSeconds, 's', 'left')}
+    <ul
+            class="fixed bottom-1/3 left-1/2 -translate-x-1/2 flex justify-between items-center w-[calc(100vw-48px)] max-w-lg"
+            in:appear
+            onintroend={() => onAnimationFinished()}>
+        {@render floatingIcon(feedbackStatus === 'right-answer')}
+        {@render floatingNumber(deltaPoints, 'pts')}
+        {@render floatingNumber(deltaSeconds, 's')}
+        {@render floatingIcon(feedbackStatus === 'right-answer')}
+    </ul>
 {/if}
 
 <!--{#if feedbackStatus !== 'none'}-->
