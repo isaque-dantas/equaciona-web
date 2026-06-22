@@ -1,5 +1,4 @@
 import type {GameState, UpdatedGameState} from "../interfaces/GameState.svelte";
-import {gameOptionsFactory, gameStateFactory} from "./GameInitializer.svelte";
 
 export function getUpdatedGame(isAnswerRight: boolean, state: GameState): UpdatedGameState {
     const {points, deltaPoints} = getUpdatedPoints(isAnswerRight, state)

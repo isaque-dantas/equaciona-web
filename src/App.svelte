@@ -11,10 +11,17 @@
     import {startCountdown} from "./lib/domain/TimeCountdown.svelte";
     import {getUpdatedGame} from "./lib/domain/PointsHandler.svelte";
     import type {GameState} from "./lib/interfaces/GameState.svelte";
-    import {equationOptionsFactory, gameOptionsFactory, gameStateFactory} from "./lib/domain/GameInitializer.svelte";
+    import {
+        emptyEquationFactory,
+        equationOptionsFactory,
+        gameOptionsFactory,
+        gameStateFactory
+    } from "./lib/domain/GameInitializer.svelte";
+    import DifficultySelector from "./lib/components/DifficultySelector.svelte";
 
-    const equationOptions: EquationOptions = equationOptionsFactory();
-    const gameOptions: GameOptions = gameOptionsFactory()
+    let selectedDifficulty: number = $state(2)
+    let equationOptions: EquationOptions = $derived(equationOptionsFactory(selectedDifficulty));
+    let gameOptions: GameOptions = $derived(gameOptionsFactory(selectedDifficulty))
 
     let equation: Equation = $state(generateEquation(equationOptions))
     let answer = $state('')
@@ -23,8 +30,8 @@
     let points = $state(0)
     let deltaPoints = $state(0)
 
-    let secondsLeft = $state(gameOptions.initialSeconds)
-    let secondsOfLastRightAnswer = $state(gameOptions.initialSeconds)
+    let secondsLeft = $state(0)
+    let secondsOfLastRightAnswer = $state(0)
     let deltaSeconds = $state(0)
 
     let gameState: GameState = $derived({
@@ -43,31 +50,40 @@
     }
 
     function onRightAnswer() {
-        equation = generateEquation(equationOptions)
-        feedbackStatus = 'right-answer';
-
+        feedbackStatus = 'right-answer'
+        equation = generateEquation(equationOptions);
         ({points, deltaPoints, secondsLeft, secondsOfLastRightAnswer, deltaSeconds} = getUpdatedGame(true, gameState))
     }
 
     function onWrongAnswer() {
         feedbackStatus = 'wrong-answer';
-
         ({points, deltaPoints, secondsLeft, secondsOfLastRightAnswer, deltaSeconds} = getUpdatedGame(false, gameState))
     }
 
-    function resetGame() {
-        ({points, secondsLeft, secondsOfLastRightAnswer} = gameStateFactory());
+    function resetGameStatus() {
+        ({points, secondsLeft, secondsOfLastRightAnswer} = gameStateFactory(selectedDifficulty));
         answer = ''
-        gameStatus = 'running'
-
         equation = generateEquation(equationOptions)
 
+        clearInterval(countdownIntervalId)
         countdownIntervalId = startCountdown(
             () => secondsLeft,
             (s) => secondsLeft = s,
             onCountdownBeingOver
         )
     }
+
+    function resetGame() {
+        gameStatus = 'running'
+        resetGameStatus()
+    }
+
+    function onDifficultyChanged(updatedDifficulty: number) {
+        selectedDifficulty = updatedDifficulty
+        resetGameStatus()
+    }
+
+    $inspect(gameOptions)
 </script>
 
 <main class="px-6 flex flex-col md:absolute md:top-48 md:left-1/2 md:-translate-x-1/2">
@@ -78,8 +94,11 @@
             <a href="https://github.com/isaque-dantas" target="_blank"
                class="flex items-center p-4 border border-slate-300 shadow-md rounded-lg mt-4">
                 Por Isaque Dantas (GitHub<span class="material-symbols-outlined">arrow_outward</span>)</a>
+
+            <DifficultySelector onDifficultyChanged={onDifficultyChanged} {selectedDifficulty}/>
+
             <button onclick={resetGame}
-                    class="text-xl mt-10 border-2 border-slate-700 text-slate-700 self-center px-10 py-1 rounded-xl cursor-pointer hover:bg-slate-700 hover:text-white transition-all font-bold flex items-center">
+                    class="text-xl border-2 border-slate-700 text-slate-700 self-center px-10 py-1 rounded-xl cursor-pointer hover:bg-slate-700 hover:text-white transition-all font-bold flex items-center">
                 <span>Iniciar</span><span class="material-symbols-outlined">chevron_right</span></button>
         </section>
     {:else if gameStatus === 'running'}
@@ -97,7 +116,6 @@
             <UserInputHandler
                     onAnswerSubmitted={(updatedAnswer: string) => {
                         answer = updatedAnswer
-                        console.log('answer', answer)
                         checkAnswer(answer, equation, onRightAnswer, onWrongAnswer)
                     }}
             />

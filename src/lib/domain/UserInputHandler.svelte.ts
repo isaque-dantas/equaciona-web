@@ -1,7 +1,6 @@
 import type {Equation} from "../interfaces/Equation.svelte";
 
 export function checkAnswer(answer: string, equation: Equation, onRightAnswer: () => void, onWrongAnswer: () => void) {
-    console.log('on checking', answer)
     if (parseAnswer(answer) == equation.solution) {
         onRightAnswer()
     } else {
